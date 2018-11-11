@@ -15,7 +15,7 @@ sig Gender{
 {(male.isTrue and female.isFalse) or (female.isTrue and male.isFalse)}
 
 -- The acceptedRequests is a set of Single Requests that a specific user has accepted, while pendantRequests refers to all the pending requests of a specific user --
--- A request is accepted to give the authorization to a Third-Party to get access to his own latest personal data --
+-- A User can accept a request to give the authorization to a Third-Party to get access to his latest personal data --
 -- automatedSos indicates if a User is subscribed to the automatedSOS service --
 sig User{
 	username: one Username,
@@ -92,7 +92,7 @@ sig GroupReq extends Request{
 	(square != none or age!=none or gender!=none) and (accepted.isFalse implies data = none)
 }
 
--- data measured and collected --
+-- latest data measured and collected --
 sig PersonalData{
 	max_pressure: one Int,
 	min_pressure: one Int,
@@ -107,7 +107,7 @@ sig AutomatedSOS{
 
 
 
--- FACT --
+					--------------------------  FACT --------------------------
 
 -- Considering two distinct User, they can never have the same username or the same SSN --
 fact distinctUser{
@@ -176,9 +176,9 @@ fact validNumGroupRequest{
 		(#g.data >5) implies g.accepted.isTrue else g.accepted.isFalse
 }
 
--- a groupRequest is valid if each user's location of the request is within the square area speciified in the group request OR
+-- a groupRequest is valid if each user's location of the request is within the square area specified in the group request OR
 -- if the user's age of the request is within the two limits of the age Range OR
--- if The gender types of a Group request and the corresponding Peronal data must match
+-- if The gender types of a Group request and the corresponding Personal data must match
 fact validDataGroupReq{
 	all g: GroupReq |
 		(g.square = none or
@@ -193,9 +193,7 @@ fact validDataGroupReq{
 		)and
 		(g.gender = none or
 			(all d: g.data | one u: User | u.data = d and 
-				(u.gender.male = g.gender.male)
-			)
-		)
+				(u.gender.male = g.gender.male)))
 }
 
 
@@ -234,21 +232,20 @@ fact emergencyCall{
 		u.automatedSos = none or
 			(u.data.min_pressure>5 or u.data.min_pressure<2 or u.data.max_pressure>6 or u.data.max_pressure<3  or u.data.bpm<2 or u.data.bpm>6) implies
 				u.automatedSos.emergency.isTrue
-				else u.automatedSos.emergency.isFalse
-	)
+				else u.automatedSos.emergency.isFalse)
 }
 
 
--- PREDICATES --
+					--------------------------  PREDICATES --------------------------
 
 -- Health Status of the User u is good (all the Personal Data values DO NOT cross threshold values) --
--- User u has actived AutomatedSos service --
+-- User u has activated AutomatedSos service --
 pred healthyUser[u:User]{
 	one p:PersonalData | u.data = p and u.automatedSos != none and (p.max_pressure = 3 and p.min_pressure = 2 and p.bpm =3)
 }
 
--- Health Status of the User u is NOTgood (one of the Personal Data values cross the corresponding threshold value) --
--- User u has actived AutomatedSos service --
+-- Health Status of the User u is NOT good (one of the Personal Data values cross the corresponding threshold value) --
+-- User u has activated AutomatedSos service --
 pred needEmergency[u:User]{
 	one p:PersonalData | u.data = p and u.automatedSos != none and p.max_pressure = 2
 }
@@ -264,7 +261,7 @@ pred callAmbulance[u1: User, u2: User]{
 	u2.automatedSos.emergency.isTrue	
 }
 
--------------------------
+					--------------------------------------------------------------
 
 -- The single request s is an accepted request present in the acceptedRequests list of an User u --
 pred acceptedSingleReqInAcceptedList[s:SingleReq]{
@@ -289,9 +286,6 @@ pred singleReqWellPlaced[s1: SingleReq, s2: SingleReq]{
 --run callAmbulance
 --run singleReqWellPlaced
 
-fact dhs{
-	
-}
 
 pred show{
 	#ThirdP > 2
