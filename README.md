@@ -4,4 +4,4 @@ The objective of this project is to become familiar with software engineering pr
 1. The preparation of a Requirement Analysis and Specification Document (RASD) for a problem we provide you.
 2. The definition of the Design Document (DD) for the system considered in point 1 above.
 
-The complete description of the assignment can be foud in this document [a link](Project Assignment 2018-2019.pdf).
+The complete description of the assignment can be foud in [Project Assignment 2018-2019.pdf](Project Assignment 2018-2019.pdf).
